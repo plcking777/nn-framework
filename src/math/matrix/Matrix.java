@@ -57,7 +57,7 @@ public class Matrix {
             throw new IllegalArgumentException("Unable to do matrix multiplication. wrong size");
         }
 
-        double[][] out = new double[this.rows][];
+        double[][] out = new double[this.rows][matrix.getCols()];
 
         for (int row = 0; row < this.rows; row++) {
             for (int col2 = 0; col2 < matrix.getCols(); col2++) {
@@ -79,6 +79,18 @@ public class Matrix {
         return new Matrix(out);
     }
 
+    public Matrix transpose() {
+        double[][] out = new double[this.cols][this.rows];
+
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                out[col][row] = this.values[row][col];
+            }
+        }
+
+        return new Matrix(out);
+    }
+
     public double getValue(int row, int col) {
         return this.values[row][col];
     }
@@ -89,5 +101,13 @@ public class Matrix {
 
     public int getCols() {
         return cols;
+    }
+
+    public double[][] getValues() {
+        return this.values;
+    }
+
+    public void setValues(double[][] values) {
+        this.values = values;
     }
 }
