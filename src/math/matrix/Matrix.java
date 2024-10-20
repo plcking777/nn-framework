@@ -54,7 +54,8 @@ public class Matrix {
     public Matrix multiply(Matrix matrix) {
 
         if (this.cols != matrix.getRows()) {
-            throw new IllegalArgumentException("Unable to do matrix multiplication. wrong size");
+            throw new IllegalArgumentException("Unable to do matrix multiplication. Wrong size ("
+                    + this.rows + "x"  + this.cols + "    " + matrix.getRows() + "x" + matrix.getCols() + ")");
         }
 
         double[][] out = new double[this.rows][matrix.getCols()];
