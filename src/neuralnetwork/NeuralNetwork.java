@@ -3,7 +3,6 @@ package neuralnetwork;
 import math.matrix.Matrix;
 import neuralnetwork.utils.ActivationFunction;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class NeuralNetwork {
@@ -35,6 +34,7 @@ public class NeuralNetwork {
 
     }
 
+    // TODO keep track of every activation to be able to do the backprop
     public void forward() {
         Matrix prevActivation = this.input;
         for (int i = 0; i < this.weights.length; i++) {
@@ -42,12 +42,39 @@ public class NeuralNetwork {
             prevActivation = ActivationFunction.mapActivation(n, ActivationFunction.SIGMOID);
         }
         setOutput(prevActivation);
-        System.out.println(Arrays.deepToString(output.getValues()));
     }
 
-    public void backward() {
+    public void backward(Matrix target) {
 
+        Matrix[] weightDerivatives = new Matrix[this.weights.length];
+        Matrix[] biasDerivatives = new Matrix[this.biases.length];
+
+        Matrix previouseActivation = this.output;
+        Matrix n = costDerivative(target);
+        // weightDerivatives[this.weights.length - 1] = n.multiply();
+        for (int i = this.weights.length - 1; i > 0; i--) {
+
+        }
     }
+
+    public double cost(Matrix target) {
+        if (output.getRows() != target.getRows() || output.getCols() != target.getCols()) {
+            throw new IllegalArgumentException("The output and the target should have the same size.");
+        }
+
+        double average = 0.d;
+        for (int row = 0; row < output.getRows(); row++) {
+            for (int col = 0; col < output.getCols(); col++) {
+                average += (output.getValue(row, col) - target.getValue(row, col));
+            }
+        }
+        return Math.pow(average / (output.getRows() * output.getCols()), 2);
+    }
+
+    public Matrix costDerivative(Matrix target) {
+        return this.output.subtract(target).elementMultiply(2.d);
+    }
+
 
     public Matrix getInput() {
         return input;

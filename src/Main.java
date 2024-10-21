@@ -25,6 +25,8 @@ public class Main {
 
         nn.setInput(List.of(1.0d));
         nn.forward();
+        System.out.println("Cost of random matrix: " + nn.cost(new Matrix(1,1,true)));
+
 
         System.out.println(System.currentTimeMillis() - start + "ms");
     }
