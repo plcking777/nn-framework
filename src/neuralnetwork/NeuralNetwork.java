@@ -7,12 +7,16 @@ import java.util.List;
 
 public class NeuralNetwork {
 
+    private static final double LEARNING_RATE = 0.0001;
+
     private List<Integer> layers;
     private final Matrix[] weights;
     private final Matrix[] biases;
 
-    private Matrix input;
-    private Matrix output;
+    private Matrix[] activations;
+
+
+
 
     /**
      *
@@ -20,7 +24,9 @@ public class NeuralNetwork {
      *               and the value of the int on each index represents the amount of nodes for the layer on that index
      */
     public NeuralNetwork(List<Integer> layers) {
-        // TODO what type of list should this be
+
+        activations = new Matrix[layers.size()];
+
         weights = new Matrix[layers.size() - 1];
         biases = new Matrix[layers.size() - 1];
 
@@ -34,12 +40,13 @@ public class NeuralNetwork {
 
     }
 
-    // TODO keep track of every activation to be able to do the backprop
     public void forward() {
-        Matrix prevActivation = this.input;
+        Matrix prevActivation = this.getInput();
         for (int i = 0; i < this.weights.length; i++) {
             Matrix n = prevActivation.multiply(this.weights[i]).add(biases[i]);
+            //Matrix n = prevActivation.multiply(this.weights[i]);
             prevActivation = ActivationFunction.mapActivation(n, ActivationFunction.SIGMOID);
+            this.activations[i+1] = prevActivation;
         }
         setOutput(prevActivation);
     }
@@ -49,15 +56,24 @@ public class NeuralNetwork {
         Matrix[] weightDerivatives = new Matrix[this.weights.length];
         Matrix[] biasDerivatives = new Matrix[this.biases.length];
 
-        Matrix previouseActivation = this.output;
         Matrix n = costDerivative(target);
-        // weightDerivatives[this.weights.length - 1] = n.multiply();
-        for (int i = this.weights.length - 1; i > 0; i--) {
+        weightDerivatives[this.weights.length - 1] = n.multiply(this.activations[this.activations.length - 2]);
+        biasDerivatives[this.biases.length - 1] = n;
 
-        }
+        n = this.weights[this.weights.length - 1].multiply(n);
+        weightDerivatives[this.weights.length - 2] = n.multiply(this.activations[this.activations.length - 3]);
+        biasDerivatives[this.biases.length - 2] = n;
+
+
+        n = this.weights[this.weights.length - 2].multiply(n);
+        weightDerivatives[this.weights.length - 3] = n.multiply(this.activations[this.activations.length - 4]);
+        biasDerivatives[this.biases.length - 3] = n;
+
+        this.updateWeights(weightDerivatives);
     }
 
     public double cost(Matrix target) {
+        Matrix output = getOutput();
         if (output.getRows() != target.getRows() || output.getCols() != target.getCols()) {
             throw new IllegalArgumentException("The output and the target should have the same size.");
         }
@@ -72,16 +88,25 @@ public class NeuralNetwork {
     }
 
     public Matrix costDerivative(Matrix target) {
-        return this.output.subtract(target).elementMultiply(2.d);
+        return this.getOutput().subtract(target).elementMultiply(2.d);
     }
 
+    private void updateWeights(Matrix[] weightDerivatives) {
+        for (int i = 0; i < this.weights.length; i++) {
+            this.weights[i] = this.weights[i].subtract(weightDerivatives[i].transpose().elementMultiply(LEARNING_RATE));
+        }
+
+        for (int i = 0; i < this.biases.length; i++) {
+            this.biases[i] = this.biases[i].subtract(biases[i].elementMultiply(LEARNING_RATE));
+        }
+    }
 
     public Matrix getInput() {
-        return input;
+        return this.activations[0];
     }
 
     public void setInput(Matrix input) {
-        this.input = input;
+        this.activations[0] = input;
     }
 
     public void setInput(List<Double> input) {
@@ -89,15 +114,15 @@ public class NeuralNetwork {
         for (int i = 0; i < input.size(); i++) {
             values[0][i] = input.get(i);
         }
-        this.input = new Matrix(values);
+        this.activations[0] = new Matrix(values);
     }
 
 
     public Matrix getOutput() {
-        return output;
+        return this.activations[this.activations.length - 1];
     }
 
     private void setOutput(Matrix output) {
-        this.output = output;
+        this.activations[this.activations.length - 1] = output;
     }
 }
