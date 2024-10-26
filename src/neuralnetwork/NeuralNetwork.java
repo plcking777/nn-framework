@@ -69,7 +69,7 @@ public class NeuralNetwork {
         weightDerivatives[this.weights.length - 3] = n.multiply(this.activations[this.activations.length - 4]);
         biasDerivatives[this.biases.length - 3] = n;
 
-        this.updateWeights(weightDerivatives);
+        this.updateWeightsAndBiases(weightDerivatives, biasDerivatives);
     }
 
     public double cost(Matrix target) {
@@ -91,13 +91,13 @@ public class NeuralNetwork {
         return this.getOutput().subtract(target).elementMultiply(2.d);
     }
 
-    private void updateWeights(Matrix[] weightDerivatives) {
+    private void updateWeightsAndBiases(Matrix[] weightDerivatives, Matrix[] biasDerivatives) {
         for (int i = 0; i < this.weights.length; i++) {
             this.weights[i] = this.weights[i].subtract(weightDerivatives[i].transpose().elementMultiply(LEARNING_RATE));
         }
 
         for (int i = 0; i < this.biases.length; i++) {
-            this.biases[i] = this.biases[i].subtract(biases[i].elementMultiply(LEARNING_RATE));
+            this.biases[i] = this.biases[i].subtract(biasDerivatives[i].transpose().elementMultiply(LEARNING_RATE));
         }
     }
 
