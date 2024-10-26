@@ -56,7 +56,7 @@ public class NeuralNetwork {
         Matrix[] weightDerivatives = new Matrix[this.weights.length];
         Matrix[] biasDerivatives = new Matrix[this.biases.length];
 
-        Matrix n = costDerivative(target);
+        Matrix n = costDerivative(target).transpose();
         weightDerivatives[this.weights.length - 1] = n.multiply(this.activations[this.activations.length - 2]);
         biasDerivatives[this.biases.length - 1] = n;
 

@@ -8,9 +8,9 @@ public class Main {
         System.out.println("start");
 
         long start = System.currentTimeMillis();
-        NeuralNetwork nn = new NeuralNetwork(List.of(1, 100, 100, 1));
+        NeuralNetwork nn = new NeuralNetwork(List.of(1, 100, 100, 3));
 
-        Matrix target = new Matrix(new double[][] {{0.5d}});
+        Matrix target = new Matrix(new double[][] {{ 1d, 0.5d, 0d }});
 
         for (int i = 0; i < 100; i++) {
             nn.setInput(List.of(1.0d));
