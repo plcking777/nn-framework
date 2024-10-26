@@ -7,7 +7,8 @@ import java.util.List;
 
 public class NeuralNetwork {
 
-    private static final double LEARNING_RATE = 0.0001;
+    //private static final double LEARNING_RATE = 0.0001;
+    private static final double LEARNING_RATE = 1E-7;
 
     private List<Integer> layers;
     private final Matrix[] weights;
@@ -24,18 +25,18 @@ public class NeuralNetwork {
      *               and the value of the int on each index represents the amount of nodes for the layer on that index
      */
     public NeuralNetwork(List<Integer> layers) {
+        this.layers = layers;
+        this.activations = new Matrix[layers.size()];
 
-        activations = new Matrix[layers.size()];
-
-        weights = new Matrix[layers.size() - 1];
-        biases = new Matrix[layers.size() - 1];
+        this.weights = new Matrix[layers.size() - 1];
+        this.biases = new Matrix[layers.size() - 1];
 
         for (int i = 0; i < layers.size() - 1; i++) {
             int nodes = layers.get(i);
             int next_nodes = layers.get(i + 1);
 
-            weights[i] = new Matrix(nodes, next_nodes, true);
-            biases[i] = new Matrix(1, next_nodes, true);
+            this.weights[i] = new Matrix(nodes, next_nodes, true);
+            this.biases[i] = new Matrix(1, next_nodes, true);
         }
 
     }
@@ -55,7 +56,7 @@ public class NeuralNetwork {
 
         Matrix[] weightDerivatives = new Matrix[this.weights.length];
         Matrix[] biasDerivatives = new Matrix[this.biases.length];
-
+        /*
         Matrix n = costDerivative(target).transpose();
         weightDerivatives[this.weights.length - 1] = n.multiply(this.activations[this.activations.length - 2]);
         biasDerivatives[this.biases.length - 1] = n;
@@ -68,6 +69,16 @@ public class NeuralNetwork {
         n = this.weights[this.weights.length - 2].multiply(n);
         weightDerivatives[this.weights.length - 3] = n.multiply(this.activations[this.activations.length - 4]);
         biasDerivatives[this.biases.length - 3] = n;
+         */
+
+        Matrix n = costDerivative(target).transpose();
+
+        for (int i = 0; i < this.weights.length; i++) {
+            weightDerivatives[this.weights.length - (i+1)] = n.multiply(this.activations[this.activations.length - (i+2)]);
+            biasDerivatives[this.biases.length - (i+1)] = n;
+            n = this.weights[this.weights.length - (i+1)].multiply(n);
+        }
+
 
         this.updateWeightsAndBiases(weightDerivatives, biasDerivatives);
     }
@@ -106,10 +117,16 @@ public class NeuralNetwork {
     }
 
     public void setInput(Matrix input) {
+        if (input.getRows() != 1 || input.getCols() != this.layers.getFirst()) {
+            throw new IllegalArgumentException("An invalid input was given with the wrong size.");
+        }
         this.activations[0] = input;
     }
 
     public void setInput(List<Double> input) {
+        if (input.size() != this.layers.getFirst()) {
+            throw new IllegalArgumentException("An invalid input was given with the wrong size.");
+        }
         double[][] values = new double[1][input.size()];
         for (int i = 0; i < input.size(); i++) {
             values[0][i] = input.get(i);

@@ -30,7 +30,12 @@ public class Matrix {
     private double generateRandom(double min, double max) {
         return min + (Math.random() * (max - min));
     }
+
     public Matrix add(Matrix matrix) {
+        if (this.rows != matrix.getRows() || this.cols != matrix.getCols()) {
+            throw new IllegalArgumentException("Wrong sizes for Matrix additio: ("
+                    + this.rows + "x" + this.cols + "   " + matrix.getRows() + "x" + matrix.getCols() + ")");
+        }
         double[][] out = new double[this.rows][this.cols];
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
