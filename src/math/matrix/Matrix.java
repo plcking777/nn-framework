@@ -1,5 +1,7 @@
 package math.matrix;
 
+// TODO make this more general
+// TODO check if we return references instead of values where not expected
 public class Matrix {
 
     private int rows;
@@ -104,6 +106,15 @@ public class Matrix {
     public int getRows() {
         return rows;
     }
+
+    public double[] getRow(int row) {
+        return this.values[row].clone();
+    }
+
+    public Matrix getRowAsMatrix(int row) {
+        return new Matrix(new double[][] { this.values[row].clone() });
+    }
+
 
     public int getCols() {
         return cols;

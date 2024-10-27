@@ -1,47 +1,54 @@
+import data.DataReader;
+import data.DataWriter;
+import data.csv.read.CsvReader;
+import data.csv.write.CsvWriter;
 import math.matrix.Matrix;
 import neuralnetwork.NeuralNetwork;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+
+
+    private static final long ITERATIONS = 10000;
+
+
+    public static void main(String[] args) throws IOException {
+
+        int rowsOfData = 1;
+
+        DataReader dataReader = new CsvReader("/some/path/here/test.csv", ",");
+
+        Matrix trainData = dataReader.read(rowsOfData, 0);
+
+
+
+
+
         System.out.println("start");
         long start = System.currentTimeMillis();
 
 
-        HashMap<List<Double>, double[][]> train = new HashMap<>();
-
-        // Binary adder
-        train.put(List.of(0d, 0d, 0d, 0d), new double[][] {{ 0d, 0d, 0d, 0d }});
-        train.put(List.of(0d, 0d, 0d, 1d), new double[][] {{ 0d, 0d, 0d, 1d }});
-        train.put(List.of(0d, 0d, 1d, 0d), new double[][] {{ 0d, 0d, 1d, 0d }});
-        train.put(List.of(0d, 0d, 1d, 1d), new double[][] {{ 0d, 0d, 1d, 1d }});
-        train.put(List.of(0d, 1d, 0d, 0d), new double[][] {{ 0d, 0d, 0d, 1d }});
-        train.put(List.of(0d, 1d, 0d, 1d), new double[][] {{ 0d, 0d, 1d, 0d }});
-        train.put(List.of(0d, 1d, 1d, 0d), new double[][] {{ 0d, 0d, 1d, 1d }});
-        train.put(List.of(0d, 1d, 1d, 1d), new double[][] {{ 0d, 1d, 0d, 0d }});
-        train.put(List.of(1d, 0d, 1d, 1d), new double[][] {{ 0d, 1d, 0d, 1d }});
-        train.put(List.of(1d, 1d, 1d, 1d), new double[][] {{ 0d, 1d, 1d, 0d }});
 
 
-
-        NeuralNetwork nn = new NeuralNetwork(List.of(4, 100, 100, 4));
+        NeuralNetwork nn = new NeuralNetwork(List.of(1, 10, 100, 154882), 0.1);
         Matrix target;
 
         double prev = Double.MAX_VALUE;
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < ITERATIONS; i++) {
 
 
-            for (List<Double> input : train.keySet()) {
-                nn.setInput(input);
-                target = new Matrix(train.get(input));
+            for (int j = 0; j < rowsOfData; j++) {
+                Matrix input = trainData.getRowAsMatrix(j);
+                nn.setInput(List.of(0d));
+                target = input;
 
                 nn.forward();
 
-                if (i % 10000 == 0) {
+                if (i % 10 == 0) {
+                    System.out.println(i / 100 + " / " + ITERATIONS / 100);
                     double cost = nn.cost(target);
                     if (cost > prev) {
                         //throw new RuntimeException("Cost of the network increased");
@@ -49,7 +56,7 @@ public class Main {
                     }
                     prev = cost;
 
-                    //System.out.println("Cost: " + cost);
+                    System.out.println("Cost: " + cost);
                 }
 
                 nn.backward(target);
@@ -63,7 +70,7 @@ public class Main {
 
 
         System.out.println("\n\n --- Testing ---");
-
+        /*
         nn.setInput(List.of(0d, 1d, 1d, 1d));
         nn.forward();
         System.out.println(Arrays.deepToString(nn.getOutput().getValues()));
@@ -75,5 +82,12 @@ public class Main {
         nn.setInput(List.of(1d, 0d, 1d, 1d));
         nn.forward();
         System.out.println(Arrays.deepToString(nn.getOutput().getValues()));
+         */
+
+        //nn.setInput(trainData.getRowAsMatrix(0));
+        nn.setInput(List.of(0d));
+        nn.forward();
+        DataWriter dataWriter = new CsvWriter(",");
+        dataWriter.write("/some/path/here/test.csv", nn.getOutput());
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class NeuralNetwork {
 
     //private static final double LEARNING_RATE = 0.0001;
-    private static final double LEARNING_RATE = 0.0001;
+    private final double LEARNING_RATE;
 
     private List<Integer> layers;
     private final Matrix[] weights;
@@ -24,9 +24,10 @@ public class NeuralNetwork {
      * @param layers A list of ints were it's size represents the amount of layers (including input & output layers);
      *               and the value of the int on each index represents the amount of nodes for the layer on that index
      */
-    public NeuralNetwork(List<Integer> layers) {
+    public NeuralNetwork(List<Integer> layers, double learningRate) {
         this.layers = layers;
         this.activations = new Matrix[layers.size()];
+        this.LEARNING_RATE = learningRate;
 
         this.weights = new Matrix[layers.size() - 1];
         this.biases = new Matrix[layers.size() - 1];
@@ -38,6 +39,7 @@ public class NeuralNetwork {
             this.weights[i] = new Matrix(nodes, next_nodes, true);
             this.biases[i] = new Matrix(1, next_nodes, true);
         }
+
 
     }
 
