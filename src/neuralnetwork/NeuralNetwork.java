@@ -8,7 +8,7 @@ import java.util.List;
 public class NeuralNetwork {
 
     //private static final double LEARNING_RATE = 0.0001;
-    private static final double LEARNING_RATE = 1E-7;
+    private static final double LEARNING_RATE = 0.0001;
 
     private List<Integer> layers;
     private final Matrix[] weights;
@@ -53,23 +53,8 @@ public class NeuralNetwork {
     }
 
     public void backward(Matrix target) {
-
         Matrix[] weightDerivatives = new Matrix[this.weights.length];
         Matrix[] biasDerivatives = new Matrix[this.biases.length];
-        /*
-        Matrix n = costDerivative(target).transpose();
-        weightDerivatives[this.weights.length - 1] = n.multiply(this.activations[this.activations.length - 2]);
-        biasDerivatives[this.biases.length - 1] = n;
-
-        n = this.weights[this.weights.length - 1].multiply(n);
-        weightDerivatives[this.weights.length - 2] = n.multiply(this.activations[this.activations.length - 3]);
-        biasDerivatives[this.biases.length - 2] = n;
-
-
-        n = this.weights[this.weights.length - 2].multiply(n);
-        weightDerivatives[this.weights.length - 3] = n.multiply(this.activations[this.activations.length - 4]);
-        biasDerivatives[this.biases.length - 3] = n;
-         */
 
         Matrix n = costDerivative(target).transpose();
 
