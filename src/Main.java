@@ -11,7 +11,7 @@ import java.util.List;
 public class Main {
 
 
-    private static final long ITERATIONS = 10000;
+    private static final long ITERATIONS = 1000;
 
 
     public static void main(String[] args) throws IOException {
@@ -32,36 +32,13 @@ public class Main {
 
 
 
-        NeuralNetwork nn = new NeuralNetwork(List.of(1, 10, 100, 154882), 0.1);
-        Matrix target;
-
-        double prev = Double.MAX_VALUE;
+        NeuralNetwork nn = new NeuralNetwork(List.of(1, 10, 154882), 0.1, true);
 
         for (int i = 0; i < ITERATIONS; i++) {
-
-
-            for (int j = 0; j < rowsOfData; j++) {
-                Matrix input = trainData.getRowAsMatrix(j);
-                nn.setInput(List.of(0d));
-                target = input;
-
-                nn.forward();
-
-                if (i % 10 == 0) {
-                    System.out.println(i / 100 + " / " + ITERATIONS / 100);
-                    double cost = nn.cost(target);
-                    if (cost > prev) {
-                        //throw new RuntimeException("Cost of the network increased");
-                        System.out.println("Cost of the network increased");
-                    }
-                    prev = cost;
-
-                    System.out.println("Cost: " + cost);
-                }
-
-                nn.backward(target);
+            double cost = train(nn, trainData, rowsOfData);
+            if (i % 100 == 0) {
+                System.out.println("Cost: " + cost);
             }
-
         }
 
 
@@ -70,24 +47,28 @@ public class Main {
 
 
         System.out.println("\n\n --- Testing ---");
-        /*
-        nn.setInput(List.of(0d, 1d, 1d, 1d));
-        nn.forward();
-        System.out.println(Arrays.deepToString(nn.getOutput().getValues()));
 
-        nn.setInput(List.of(0d, 0d, 0d, 0d));
-        nn.forward();
-        System.out.println(Arrays.deepToString(nn.getOutput().getValues()));
-
-        nn.setInput(List.of(1d, 0d, 1d, 1d));
-        nn.forward();
-        System.out.println(Arrays.deepToString(nn.getOutput().getValues()));
-         */
-
-        //nn.setInput(trainData.getRowAsMatrix(0));
         nn.setInput(List.of(0d));
         nn.forward();
         DataWriter dataWriter = new CsvWriter(",");
         dataWriter.write("/some/path/here/test.csv", nn.getOutput());
     }
+
+
+    private static double train(NeuralNetwork nn, Matrix trainData, int rowsOfData) {
+        Matrix target;
+        double totalCost = 0.0d;
+        for (int j = 0; j < rowsOfData; j++) {
+            Matrix input = trainData.getRowAsMatrix(j);
+            nn.setInput(List.of(0d));
+            target = input;
+
+            nn.forward();
+            totalCost += nn.cost(target);
+            nn.backward(target);
+        }
+        return totalCost / rowsOfData;
+    }
+
+
 }

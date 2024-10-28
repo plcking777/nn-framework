@@ -24,7 +24,7 @@ public class NeuralNetwork {
      * @param layers A list of ints were it's size represents the amount of layers (including input & output layers);
      *               and the value of the int on each index represents the amount of nodes for the layer on that index
      */
-    public NeuralNetwork(List<Integer> layers, double learningRate) {
+    public NeuralNetwork(List<Integer> layers, double learningRate, boolean randomWeightsAndBiases) {
         this.layers = layers;
         this.activations = new Matrix[layers.size()];
         this.LEARNING_RATE = learningRate;
@@ -36,8 +36,8 @@ public class NeuralNetwork {
             int nodes = layers.get(i);
             int next_nodes = layers.get(i + 1);
 
-            this.weights[i] = new Matrix(nodes, next_nodes, true);
-            this.biases[i] = new Matrix(1, next_nodes, true);
+            this.weights[i] = new Matrix(nodes, next_nodes, randomWeightsAndBiases);
+            this.biases[i] = new Matrix(1, next_nodes, randomWeightsAndBiases);
         }
 
 
