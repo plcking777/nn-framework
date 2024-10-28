@@ -1,7 +1,5 @@
 package math.matrix;
 
-// TODO make this more general
-// TODO check if we return references instead of values where not expected
 public class Matrix {
 
     private int rows;
@@ -29,13 +27,18 @@ public class Matrix {
         this.values = values;
     }
 
+
     private double generateRandom(double min, double max) {
         return min + (Math.random() * (max - min));
     }
 
+    /**
+     * This method adds 2 matrices of the same size
+     * @param matrix Matrix to add with
+     */
     public Matrix add(Matrix matrix) {
         if (this.rows != matrix.getRows() || this.cols != matrix.getCols()) {
-            throw new IllegalArgumentException("Wrong sizes for Matrix additio: ("
+            throw new IllegalArgumentException("Wrong sizes for Matrix addition: ("
                     + this.rows + "x" + this.cols + "   " + matrix.getRows() + "x" + matrix.getCols() + ")");
         }
         double[][] out = new double[this.rows][this.cols];
@@ -47,6 +50,10 @@ public class Matrix {
         return new Matrix(out);
     }
 
+    /**
+     * This method subtracts 2 matrices of the same sizes (every element)
+     * @param matrix Matrix to subtract with
+     */
     public Matrix subtract(Matrix matrix) {
         double[][] out = new double[this.rows][this.cols];
         for (int row = 0; row < this.rows; row++) {
@@ -58,6 +65,10 @@ public class Matrix {
     }
 
 
+    /**
+     * This method multiplies 2 matrices
+     * @param matrix Matrix to multiply by
+     */
     public Matrix multiply(Matrix matrix) {
 
         if (this.cols != matrix.getRows()) {
@@ -77,6 +88,10 @@ public class Matrix {
         return new Matrix(out);
     }
 
+    /**
+     * This method multiplies every single element of the matrix with a given parameter
+     * @param n to number that multiplies every element
+     */
     public Matrix elementMultiply(double n) {
         double[][] out = new double[this.rows][this.cols];
         for (int row = 0; row < this.rows; row++) {
@@ -87,6 +102,9 @@ public class Matrix {
         return new Matrix(out);
     }
 
+    /**
+     * Transposes the matrix
+     */
     public Matrix transpose() {
         double[][] out = new double[this.cols][this.rows];
 
@@ -98,6 +116,9 @@ public class Matrix {
 
         return new Matrix(out);
     }
+
+
+
 
     public double getValue(int row, int col) {
         return this.values[row][col];
