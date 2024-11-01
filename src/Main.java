@@ -4,6 +4,7 @@ import data.csv.read.CsvReader;
 import data.csv.write.CsvWriter;
 import math.matrix.Matrix;
 import neuralnetwork.NeuralNetwork;
+import neuralnetwork.utils.ActivationFunction;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,19 +25,15 @@ public class Main {
 
 
 
-
-
         System.out.println("start");
         long start = System.currentTimeMillis();
 
 
-
-
-        NeuralNetwork nn = new NeuralNetwork(List.of(1, 10, 154882), 0.1, true);
+        NeuralNetwork nn = new NeuralNetwork(List.of(1, 10, 154882), 0.1, true, ActivationFunction.RELU);
 
         for (int i = 0; i < ITERATIONS; i++) {
             double cost = train(nn, trainData, rowsOfData);
-            if (i % 100 == 0) {
+            if (i % 10 == 0) {
                 System.out.println("Cost: " + cost);
             }
         }

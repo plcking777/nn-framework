@@ -16,6 +16,8 @@ public class NeuralNetwork {
 
     private Matrix[] activations;
 
+    private final String hiddenActivationFunction;
+
 
 
 
@@ -24,10 +26,11 @@ public class NeuralNetwork {
      * @param layers A list of ints were it's size represents the amount of layers (including input & output layers);
      *               and the value of the int on each index represents the amount of nodes for the layer on that index
      */
-    public NeuralNetwork(List<Integer> layers, double learningRate, boolean randomWeightsAndBiases) {
+    public NeuralNetwork(List<Integer> layers, double learningRate, boolean randomWeightsAndBiases, String hiddenActivationFunction) {
         this.layers = layers;
         this.activations = new Matrix[layers.size()];
         this.LEARNING_RATE = learningRate;
+        this.hiddenActivationFunction = hiddenActivationFunction;
 
         this.weights = new Matrix[layers.size() - 1];
         this.biases = new Matrix[layers.size() - 1];
@@ -47,8 +50,11 @@ public class NeuralNetwork {
         Matrix prevActivation = this.getInput();
         for (int i = 0; i < this.weights.length; i++) {
             Matrix n = prevActivation.multiply(this.weights[i]).add(biases[i]);
-            //Matrix n = prevActivation.multiply(this.weights[i]);
-            prevActivation = ActivationFunction.mapActivation(n, ActivationFunction.SIGMOID);
+            if (i == this.weights.length - 1) {
+                prevActivation = ActivationFunction.mapActivation(n, ActivationFunction.SIGMOID);
+            } else {
+                prevActivation = ActivationFunction.mapActivation(n, this.hiddenActivationFunction);
+            }
             this.activations[i+1] = prevActivation;
         }
         setOutput(prevActivation);
@@ -58,12 +64,18 @@ public class NeuralNetwork {
         Matrix[] weightDerivatives = new Matrix[this.weights.length];
         Matrix[] biasDerivatives = new Matrix[this.biases.length];
 
-        Matrix n = costDerivative(target).transpose();
+        Matrix dc = costDerivative(target).transpose();
 
         for (int i = 0; i < this.weights.length; i++) {
-            weightDerivatives[this.weights.length - (i+1)] = n.multiply(this.activations[this.activations.length - (i+2)]);
-            biasDerivatives[this.biases.length - (i+1)] = n;
-            n = this.weights[this.weights.length - (i+1)].multiply(n);
+            Matrix dact;
+            if (i == 0) {
+                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], ActivationFunction.SIGMOID).transpose();
+            } else {
+                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], this.hiddenActivationFunction).transpose();
+            }
+            weightDerivatives[this.weights.length - (i+1)] = dc.elementMultiply(dact).multiply(this.activations[this.activations.length - (i+2)]);
+            biasDerivatives[this.biases.length - (i+1)] = dc;
+            dc = this.weights[this.weights.length - (i+1)].multiply(dc);
         }
 
 
@@ -86,16 +98,16 @@ public class NeuralNetwork {
     }
 
     public Matrix costDerivative(Matrix target) {
-        return this.getOutput().subtract(target).elementMultiply(2.d);
+        return this.getOutput().subtract(target).multiplyEach(2.d);
     }
 
     private void updateWeightsAndBiases(Matrix[] weightDerivatives, Matrix[] biasDerivatives) {
         for (int i = 0; i < this.weights.length; i++) {
-            this.weights[i] = this.weights[i].subtract(weightDerivatives[i].transpose().elementMultiply(LEARNING_RATE));
+            this.weights[i] = this.weights[i].subtract(weightDerivatives[i].transpose().multiplyEach(LEARNING_RATE));
         }
 
         for (int i = 0; i < this.biases.length; i++) {
-            this.biases[i] = this.biases[i].subtract(biasDerivatives[i].transpose().elementMultiply(LEARNING_RATE));
+            this.biases[i] = this.biases[i].subtract(biasDerivatives[i].transpose().multiplyEach(LEARNING_RATE));
         }
     }
 

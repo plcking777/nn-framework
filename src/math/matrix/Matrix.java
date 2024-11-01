@@ -92,11 +92,26 @@ public class Matrix {
      * This method multiplies every single element of the matrix with a given parameter
      * @param n to number that multiplies every element
      */
-    public Matrix elementMultiply(double n) {
+    public Matrix multiplyEach(double n) {
         double[][] out = new double[this.rows][this.cols];
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
                 out[row][col] = this.values[row][col] * n;
+            }
+        }
+        return new Matrix(out);
+    }
+
+
+    public Matrix elementMultiply(Matrix matrix) {
+        if (this.rows != matrix.getRows() || this.cols != matrix.getCols()) {
+            throw new IllegalArgumentException("To use element-multiply both matrixes need to be the same size (" +
+                    this.rows + "x" + this.cols + " != " + matrix.getRows() + "x" + matrix.getCols());
+        }
+        double[][] out = new double[this.rows][this.cols];
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                out[row][col] = this.values[row][col] * matrix.getValue(row, col);
             }
         }
         return new Matrix(out);
