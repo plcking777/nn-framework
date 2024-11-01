@@ -32,7 +32,7 @@ public class CsvReader implements DataReader {
             if (index < offset) {
                 continue;
             }
-            if (index - offset > rows) {
+            if (index - offset >= rows) {
                  break;
             }
 
