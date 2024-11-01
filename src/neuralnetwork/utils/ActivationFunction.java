@@ -28,8 +28,8 @@ public class ActivationFunction {
     }
 
     private static double reluDerivative(double x) {
-        if (x <= 0d) return 0d;
-        return 1d;
+        if (x <= 0.00d) return 0.00d;
+        return 1.00d;
     }
 
     private static Matrix mapSigmoid(Matrix matrix) {
@@ -74,17 +74,20 @@ public class ActivationFunction {
     }
 
     public static Matrix mapActivation(Matrix matrix, String activation) {
-        switch(activation) {
-            case SIGMOID:
-                return mapSigmoid(matrix);
-            case SIGMOID_DERIVATIVE:
-                return mapSigmoidDerivative(matrix);
-            case RELU:
-                return mapRelu(matrix);
-            case RELU_DERIVATIVE:
-                return mapReluDerivative(matrix);
-            default:
-                throw new IllegalArgumentException("No correct activation function was provided");
-        }
+        return switch (activation) {
+            case SIGMOID -> mapSigmoid(matrix);
+            case SIGMOID_DERIVATIVE -> mapSigmoidDerivative(matrix);
+            case RELU -> mapRelu(matrix);
+            case RELU_DERIVATIVE -> mapReluDerivative(matrix);
+            default -> throw new IllegalArgumentException("No correct activation function was provided");
+        };
+    }
+
+    public static String getDerivative(String activation) {
+        return switch (activation) {
+            case SIGMOID -> SIGMOID_DERIVATIVE;
+            case RELU -> RELU_DERIVATIVE;
+            default -> throw new IllegalArgumentException("No correct activation function was provided");
+        };
     }
 }

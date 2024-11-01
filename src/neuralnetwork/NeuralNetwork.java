@@ -17,6 +17,7 @@ public class NeuralNetwork {
     private Matrix[] activations;
 
     private final String hiddenActivationFunction;
+    private final String activationDerivative;
 
 
 
@@ -31,6 +32,7 @@ public class NeuralNetwork {
         this.activations = new Matrix[layers.size()];
         this.LEARNING_RATE = learningRate;
         this.hiddenActivationFunction = hiddenActivationFunction;
+        this.activationDerivative = ActivationFunction.getDerivative(hiddenActivationFunction);
 
         this.weights = new Matrix[layers.size() - 1];
         this.biases = new Matrix[layers.size() - 1];
@@ -69,9 +71,9 @@ public class NeuralNetwork {
         for (int i = 0; i < this.weights.length; i++) {
             Matrix dact;
             if (i == 0) {
-                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], ActivationFunction.SIGMOID).transpose();
+                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], ActivationFunction.SIGMOID_DERIVATIVE).transpose();
             } else {
-                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], this.hiddenActivationFunction).transpose();
+                dact = ActivationFunction.mapActivation(this.activations[this.activations.length - (i+1)], this.activationDerivative).transpose();
             }
             weightDerivatives[this.weights.length - (i+1)] = dc.elementMultiply(dact).multiply(this.activations[this.activations.length - (i+2)]);
             biasDerivatives[this.biases.length - (i+1)] = dc;
