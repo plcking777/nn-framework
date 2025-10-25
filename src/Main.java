@@ -1,5 +1,6 @@
 import data.DataReader;
 import data.csv.read.CsvReader;
+import graphics.window.MainWindow;
 import math.matrix.Matrix;
 import neuralnetwork.NeuralNetwork;
 import neuralnetwork.utils.ActivationFunction;
@@ -17,10 +18,18 @@ public class Main {
 
         int rowsOfData = 1;
 
-        DataReader dataReader = new CsvReader("C:\\github\\gaming\\out.csv", ",");
+        DataReader dataReader = new CsvReader("some/path", ",");
 
-        Matrix trainData = dataReader.read(rowsOfData, null, 0).mapFn(x -> x / 255.0);
-        Matrix trainLabels = dataReader.read(rowsOfData, null, 0).mapFn(x -> x / 255.0);
+
+        double[][] inp = new double[784][2];
+        for (int x = 0; x < 28; x++) {
+            for (int y = 0; y < 28; y++) {
+                inp[x * 28 + y] = new double[] {x / 28.0, y / 28.0};
+            }
+        }
+
+        Matrix trainData = new Matrix(inp);
+        Matrix trainLabels = dataReader.read(rowsOfData, null, 0).mapFn(x -> x / 255.0).transpose();
 
 
 
@@ -28,39 +37,28 @@ public class Main {
         long start = System.currentTimeMillis();
 
 
-        NeuralNetwork nn = new NeuralNetwork(List.of(784, 256, 256, 784), 0.001, true, ActivationFunction.RELU);
+        NeuralNetwork nn = new NeuralNetwork(List.of(2, 256, 1), 0.001, true, ActivationFunction.RELU);
+
+        MainWindow window = new MainWindow(nn, 800, 600, 28, 28, 20);
+        window.setVisible(true);
+
 
         for (int i = 0; i < ITERATIONS; i++) {
             double cost = train(nn, trainData, trainLabels, rowsOfData);
-            if (i % 1000 == 0) {
+            if (i % 100 == 0) {
                 System.out.println("Cost: " + cost);
+
+                nn.setInput(trainData);
+                nn.forward();
+                renderImage(nn, window);
             }
+            window.setProgressBar((float)i / ITERATIONS);
         }
+        window.setProgressBar(1.00f);
 
 
 
         System.out.println(System.currentTimeMillis() - start + "ms");
-
-
-        System.out.println("\n\n --- Testing ---");
-
-        /*
-        nn.setInput(List.of(0d, 0d));
-        nn.forward();
-        System.out.println(" -> " + Arrays.deepToString(nn.getOutput().getValues()));
-
-
-        nn.setInput(List.of(0d, 1d));
-        nn.forward();
-        System.out.println(" -> " + Arrays.deepToString(nn.getOutput().getValues()));
-
-
-        nn.setInput(List.of(1d, 1d));
-        nn.forward();
-        System.out.println(" -> " + Arrays.deepToString(nn.getOutput().getValues()));
-         */
-
-
     }
 
 
@@ -68,9 +66,9 @@ public class Main {
         Matrix target;
         double totalCost = 0.0d;
         for (int j = 0; j < rowsOfData; j++) {
-            Matrix input = trainData.getRowAsMatrix(j);
+            Matrix input = trainData; //trainData.getRowAsMatrix(j);
             nn.setInput(input);
-            target = labels.getRowAsMatrix(j);
+            target = labels; //labels.getRowAsMatrix(j);
 
             nn.forward();
             totalCost += nn.cost(target);
@@ -79,5 +77,14 @@ public class Main {
         return totalCost / rowsOfData;
     }
 
+
+
+    private static void renderImage(NeuralNetwork nn, MainWindow window) {
+        double[] data = new double[784];
+        for (int i = 0; i < 784; i++) {
+            data[i] = nn.getOutput().getRow(i)[0];
+        }
+        window.setImage(data);
+    }
 
 }

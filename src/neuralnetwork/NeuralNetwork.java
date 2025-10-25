@@ -93,7 +93,7 @@ public class NeuralNetwork {
         double average = 0.d;
         for (int row = 0; row < output.getRows(); row++) {
             for (int col = 0; col < output.getCols(); col++) {
-                average += (output.getValue(row, col) - target.getValue(row, col));
+                average += Math.abs(output.getValue(row, col) - target.getValue(row, col));
             }
         }
         return Math.pow(average / (output.getRows() * output.getCols()), 2);
@@ -118,7 +118,7 @@ public class NeuralNetwork {
     }
 
     public void setInput(Matrix input) {
-        if (input.getRows() != 1 || input.getCols() != this.layers.getFirst()) {
+        if (input.getRows() != 1 && input.getCols() != this.layers.getFirst()) {
             throw new IllegalArgumentException("An invalid input was given with the wrong size.");
         }
         this.activations[0] = input;
