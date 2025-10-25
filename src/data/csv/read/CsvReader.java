@@ -6,6 +6,7 @@ import math.matrix.Matrix;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 public class CsvReader implements DataReader {
 
@@ -19,7 +20,7 @@ public class CsvReader implements DataReader {
 
 
     @Override
-    public Matrix read(int rows, int offset) throws IOException {
+    public Matrix read(int rows, List<Integer> idxs, int offset) throws IOException {
         String line;
 
         double[][] data = new double[rows][];
@@ -30,6 +31,7 @@ public class CsvReader implements DataReader {
 
         while ((line = br.readLine()) != null) {
             if (index < offset) {
+                index++;
                 continue;
             }
             if (index - offset >= rows) {
@@ -37,9 +39,9 @@ public class CsvReader implements DataReader {
             }
 
             String[] values = line.split(this.delimiter);
-            double[] parsed = new double[values.length];
-            for (int i = 0; i < values.length; i++) {
-                double value = Double.parseDouble(values[i].trim());
+            double[] parsed = new double[idxs.size()];
+            for (int i = 0; i < idxs.size(); i++) {
+                double value = Double.parseDouble(values[idxs.get(i)].trim());
                 parsed[i] = value;
             }
             data[index - offset] = parsed;
