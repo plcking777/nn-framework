@@ -5,23 +5,22 @@ import neuralnetwork.NeuralNetwork;
 import neuralnetwork.utils.ActivationFunction;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 public class Main {
 
 
-    private static final long ITERATIONS = 1000;
+    private static final long ITERATIONS = 10000;
 
 
     public static void main(String[] args) throws IOException {
 
-        int rowsOfData = 4;
+        int rowsOfData = 1;
 
-        DataReader dataReader = new CsvReader("test-xor.csv", ",");
+        DataReader dataReader = new CsvReader("C:\\github\\gaming\\out.csv", ",");
 
-        Matrix trainData = dataReader.read(rowsOfData, List.of(0, 1), 1);
-        Matrix trainLabels = dataReader.read(rowsOfData, List.of(2), 1);
+        Matrix trainData = dataReader.read(rowsOfData, null, 0).mapFn(x -> x / 255.0);
+        Matrix trainLabels = dataReader.read(rowsOfData, null, 0).mapFn(x -> x / 255.0);
 
 
 
@@ -29,11 +28,11 @@ public class Main {
         long start = System.currentTimeMillis();
 
 
-        NeuralNetwork nn = new NeuralNetwork(List.of(2, 10, 1), 0.1, true, ActivationFunction.RELU);
+        NeuralNetwork nn = new NeuralNetwork(List.of(784, 256, 256, 784), 0.001, true, ActivationFunction.RELU);
 
         for (int i = 0; i < ITERATIONS; i++) {
             double cost = train(nn, trainData, trainLabels, rowsOfData);
-            if (i % 100 == 0) {
+            if (i % 1000 == 0) {
                 System.out.println("Cost: " + cost);
             }
         }
@@ -45,6 +44,7 @@ public class Main {
 
         System.out.println("\n\n --- Testing ---");
 
+        /*
         nn.setInput(List.of(0d, 0d));
         nn.forward();
         System.out.println(" -> " + Arrays.deepToString(nn.getOutput().getValues()));
@@ -58,6 +58,7 @@ public class Main {
         nn.setInput(List.of(1d, 1d));
         nn.forward();
         System.out.println(" -> " + Arrays.deepToString(nn.getOutput().getValues()));
+         */
 
 
     }
