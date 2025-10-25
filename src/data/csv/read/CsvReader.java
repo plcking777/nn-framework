@@ -39,12 +39,24 @@ public class CsvReader implements DataReader {
             }
 
             String[] values = line.split(this.delimiter);
-            double[] parsed = new double[idxs.size()];
-            for (int i = 0; i < idxs.size(); i++) {
-                double value = Double.parseDouble(values[idxs.get(i)].trim());
-                parsed[i] = value;
+
+            if (idxs == null) {
+                double[] parsed = new double[values.length];
+                for (int i = 0; i < values.length; i++) {
+                    double value = Double.parseDouble(values[i].trim());
+                    parsed[i] = value;
+                }
+                data[index - offset] = parsed;
+            } else {
+                double[] parsed = new double[idxs.size()];
+                for (int i = 0; i < idxs.size(); i++) {
+                    double value = Double.parseDouble(values[idxs.get(i)].trim());
+                    parsed[i] = value;
+                }
+                data[index - offset] = parsed;
             }
-            data[index - offset] = parsed;
+
+
             index++;
         }
         return new Matrix(data);
