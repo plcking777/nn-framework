@@ -39,16 +39,26 @@ public class Main {
 
         NeuralNetwork nn = new NeuralNetwork(List.of(2, 256, 1), 0.001, true, ActivationFunction.RELU);
 
-        MainWindow window = new MainWindow(nn, 800, 600, 28, 28, 20);
+        double[][] renderInp = new double[256 * 256][2];
+        for (int x = 0; x < 256; x++) {
+            for (int y = 0; y < 256; y++) {
+                renderInp[x * 256 + y] = new double[] {x / 256.0, y / 256.0};
+            }
+        }
+
+        Matrix renderData = new Matrix(renderInp);
+
+
+        MainWindow window = new MainWindow(nn, 800, 600, 256, 256, 2);
         window.setVisible(true);
 
 
         for (int i = 0; i < ITERATIONS; i++) {
             double cost = train(nn, trainData, trainLabels, rowsOfData);
-            if (i % 100 == 0) {
+            if (i % 50 == 0) {
                 System.out.println("Cost: " + cost);
 
-                nn.setInput(trainData);
+                nn.setInput(renderData);
                 nn.forward();
                 renderImage(nn, window);
             }
@@ -80,8 +90,8 @@ public class Main {
 
 
     private static void renderImage(NeuralNetwork nn, MainWindow window) {
-        double[] data = new double[784];
-        for (int i = 0; i < 784; i++) {
+        double[] data = new double[256 * 256];
+        for (int i = 0; i < 256 * 256; i++) {
             data[i] = nn.getOutput().getRow(i)[0];
         }
         window.setImage(data);
