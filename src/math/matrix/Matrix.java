@@ -1,5 +1,7 @@
 package math.matrix;
 
+import java.util.function.DoubleFunction;
+
 public class Matrix {
 
     private int rows;
@@ -126,6 +128,19 @@ public class Matrix {
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
                 out[col][row] = this.values[row][col];
+            }
+        }
+
+        return new Matrix(out);
+    }
+
+
+    public Matrix mapFn(DoubleFunction fn) {
+        double[][] out = new double[this.rows][this.cols];
+
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                out[row][col] = (double) fn.apply(this.values[row][col]);
             }
         }
 
