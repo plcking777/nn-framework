@@ -18,7 +18,7 @@ public class Main {
 
         int rowsOfData = 1;
 
-        DataReader dataReader = new CsvReader("some/path", ",");
+        DataReader dataReader = new CsvReader("data\\numbers\\number-7.csv", ",");
 
 
         double[][] inp = new double[784][2];
@@ -55,7 +55,7 @@ public class Main {
 
         for (int i = 0; i < ITERATIONS; i++) {
             double cost = train(nn, trainData, trainLabels, rowsOfData);
-            if (i % 50 == 0) {
+            if (i % 100 == 0) {
                 System.out.println("Cost: " + cost);
 
                 nn.setInput(renderData);
