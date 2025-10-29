@@ -74,17 +74,14 @@ public class Main {
 
     private static double train(NeuralNetwork nn, Matrix trainData, Matrix labels, int rowsOfData) {
         Matrix target;
-        double totalCost = 0.0d;
-        for (int j = 0; j < rowsOfData; j++) {
-            Matrix input = trainData; //trainData.getRowAsMatrix(j);
-            nn.setInput(input);
-            target = labels; //labels.getRowAsMatrix(j);
+        Matrix input = trainData;
+        target = labels;
 
-            nn.forward();
-            totalCost += nn.cost(target);
-            nn.backward(target);
-        }
-        return totalCost / rowsOfData;
+        nn.setInput(input);
+        nn.forward();
+        double totalCost = nn.cost(target);
+        nn.backward(target);
+        return totalCost;
     }
 
 
