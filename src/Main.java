@@ -65,16 +65,15 @@ public class Main {
 
     private static double train(NeuralNetwork nn, Matrix trainData, Matrix labels, int rowsOfData) {
         Matrix target;
-        double totalCost = 0.0d;
-        for (int j = 0; j < rowsOfData; j++) {
-            Matrix input = trainData.getRowAsMatrix(j);
-            nn.setInput(input);
-            target = labels.getRowAsMatrix(j);
 
-            nn.forward();
-            totalCost += nn.cost(target);
-            nn.backward(target);
-        }
+        Matrix input = trainData;
+        nn.setInput(input);
+        target = labels;
+
+        nn.forward();
+        double totalCost = nn.cost(target);
+        nn.backward(target);
+
         return totalCost / rowsOfData;
     }
 

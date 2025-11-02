@@ -118,7 +118,7 @@ public class NeuralNetwork {
     }
 
     public void setInput(Matrix input) {
-        if (input.getRows() != 1 || input.getCols() != this.layers.getFirst()) {
+        if (input.getRows() != 1 && input.getCols() != this.layers.getFirst()) {
             throw new IllegalArgumentException("An invalid input was given with the wrong size.");
         }
         this.activations[0] = input;

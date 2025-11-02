@@ -39,14 +39,14 @@ public class Matrix {
      * @param matrix Matrix to add with
      */
     public Matrix add(Matrix matrix) {
-        if (this.rows != matrix.getRows() || this.cols != matrix.getCols()) {
+        if (this.rows != matrix.getRows() && this.cols != matrix.getCols()) {
             throw new IllegalArgumentException("Wrong sizes for Matrix addition: ("
                     + this.rows + "x" + this.cols + "   " + matrix.getRows() + "x" + matrix.getCols() + ")");
         }
         double[][] out = new double[this.rows][this.cols];
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
-                out[row][col] = this.values[row][col] + matrix.getValue(row, col);
+                out[row][col] = this.values[row][col] + matrix.getValue(0, col);
             }
         }
         return new Matrix(out);
